@@ -1,0 +1,35 @@
+<table class="layui-table" lay-skin="line">
+    <thead>
+    <tr>
+        <th>简称</th>
+        <th>全称</th>
+        <th>贷款的公司</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php foreach ($list as $item) { ?>
+    <tr>
+        <td><?php echo $item['shortname']; ?></td>
+        <td>
+            <?php echo $item['fullname']; ?>
+
+            <button class="layui-btn layui-btn-mini" title="编辑银行" url="<?php echo $base_url . 'bank/edit/' . $item['bid']; ?>">
+                编辑
+            </button>
+        </td>
+        <td>人生就像是一场修行</td>
+    </tr>
+    <?php } ?>
+    </tbody>
+</table>
+<script>
+    layui.use('element', function(){
+        var $ = layui.jquery,
+            subNav = $('.layui-nav-child dd span:eq(2)', parent.document);
+
+        $('button').click(function(){
+            subNav.attr('url', $(this).attr('url'));
+            subNav.click();
+        });
+    });
+</script>

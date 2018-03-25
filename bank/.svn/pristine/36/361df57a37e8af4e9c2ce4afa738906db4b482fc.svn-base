@@ -1,0 +1,64 @@
+<?php
+class MY_Controller extends CI_Controller {
+	public $data;
+
+	public function __construct($checkLogin=true) {
+     	parent::__construct();
+        $this->load->helper('url');
+
+        $this->data['nowController'] = $this->uri->segment(1, "");
+        $this->data['nowAction'] = $this->uri->segment(2, "");
+        $this->data['base_url'] = $this->config->item('base_url'); //主题所在 URL
+        $this->data['theme_url'] = $this->data['base_url'] . "application/" . 'views/';
+
+        $this->checkLogin($checkLogin);
+	}
+
+	function checkLogin($checkLogin=true) {
+		$this->load->library('session');
+        if ($checkLogin && $this->session->logined!=1) {
+        	redirect('system/login/');
+        }
+	}
+	function view($fileName, $withHeader=1, $withFooter=1) {
+		if ($withHeader) {
+			$this->load->view('header', $this->data);
+		}
+		$this->load->view($fileName, $this->data);
+		if ($withFooter) {
+			$this->load->view('footer');
+		}
+	}
+
+	/**
+	 * bootstrap样式分页
+	 */
+	function bootPage($url='', $total=100, $pageSize=10) {
+		$this->load->library('pagination');
+
+		$this->pagination->initialize(
+			['base_url'        	 => $this->data['base_url'].$url,
+			'total_rows'         => $total,
+			'per_page'           => $pageSize,
+			'full_tag_open'      => "<div class='text-center'><ul class='pagination'>",
+			'full_tag_close'     => "</ul></div>",
+			'num_tag_open'       => '<li>',
+			'num_tag_close'      => '</li>',
+			'cur_tag_open'       => "<li class='disabled'><li class='active'><a href='#'>",
+			'cur_tag_close'      => "<span class='sr-only'></span></a></li>",
+			'next_tag_open'      => "<li>",
+			'next_tagl_close'    => "</li>",
+			'prev_tag_open'      => "<li>",
+			'prev_tagl_close'    => "</li>",
+			'first_tag_open'     => "<li>",
+			'first_tagl_close'   => "</li>",
+			'last_tag_open'      => "<li>",
+			'last_tagl_close'    => "</li>",
+			'first_link'         => "首页",
+			'last_link'          => "尾页",
+			'reuse_query_string' => true,
+			// 'page_query_string' => TRUE,
+			]
+		);
+	}
+}

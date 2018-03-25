@@ -1,0 +1,128 @@
+layui.define('laypage', function (exports) {
+    var $ = layui.jquery,
+        laypage = layui.laypage,
+
+        paging = {
+            init: function (option) {
+                paging.type = option.type;// 1：银行列表；2：公司列表；3：权限列表
+                paging.total = option.total;
+                paging.iframe = option.iframe;
+                paging.navDom = option.navDom;
+                paging.dataUrl = option.dataUrl;
+                paging.editUrl = option.editUrl;
+                paging.container = option.container;
+                paging.relieveUrl = option.relieveUrl;
+            },
+            show: function () {
+                laypage.render({
+                    elem: 'paging',
+                    count: paging.total,
+                    prev: '<i class="layui-icon">&#xe603;</i>',
+                    next: '<i class="layui-icon">&#xe602;</i>',
+                    layout: ['count', 'prev', 'page', 'next', 'limit', 'skip'],
+                    jump: function (obj, first) {
+                        paging.current = obj.curr;
+
+                        if (!first) {
+                            $.post(
+                                paging.url,
+                                {curr: obj.curr, limit: obj.limit},
+                                function (result) {
+                                    paging.html = '';
+                                    paging._order(result);
+                                    paging._setScr();
+
+                                    switch (paging.type) {
+                                        case 1 :
+                                            paging._getBanks(result);
+                                            break;
+                                        case 2 :
+                                            paging._getCompanies(result);
+                                            break;
+                                        case 3 :
+                                            paging._getUsers(result);
+                                            break;
+                                    }
+
+
+                                    paging.container.empty().html(paging.html);
+                                },
+                                'json'
+                            );
+                        }
+                    }
+                });
+            },
+            /**
+             * 从后台返回的JSON数据，会自动排成升序，因此，对JSON数据进行降序排序
+             * @param obj
+             * @private
+             */
+            _order: function (obj) {
+                paging.keys = Object.keys(obj);
+                paging.keys.sort(function (x, y) {
+                    return y - x;
+                });
+            },
+            /**
+             * 设置iframe的src值，在切换菜单时，好定位到用户查看的页码
+             * @private
+             */
+            _setScr: function () {
+                var component = paging.iframe.src.split('#');
+
+                paging.iframe.src = component[0] + '#page=' + paging.current;
+                paging.navDom.attr('data-url', paging.iframe.src);
+            },
+            _getBanks: function (result) {
+                var i = 0,
+                    keySum = paging.keys.length;
+
+                for (i; i < keySum; i++) {
+                    var key = paging.keys[i];
+
+                    paging.html += "<tr>"
+                        + "<td>" + result[key].shortname + "</td>"
+                        + "<td>"
+                        + result[key].fullname + "&nbsp;"
+                        + "<span class='edit layui-btn layui-btn-mini' data-url='" + paging.editUrl + result[key].bid + "'>"
+                        + "编辑"
+                        + "</span>"
+                        + "</td>"
+                        + "<td>";
+
+                    if (result[key].companies) {
+                        paging._getVassalCompanies(result[key].companies, result[key].bid);
+                    }
+
+                    paging.html += "</td>"
+                        + "</tr>";
+                }
+            },
+            _getVassalCompanies: function (companies, bid) {
+                var length = companies.length,
+                    mTop = (length - 1) * 20 / 2;
+
+                paging.html += "<div class='company'>";
+
+                for (var j = 0; j < length; j++) {
+                    paging.html += "<p>" + companies[j].cname + "</p>"
+                }
+
+                paging.html += "</div>"
+                    + "<div class='company' style='margin-top:" + mTop + "px'>"
+                    + "<span data-url='" + paging.relieveUrl + bid + "' class='layui-btn layui-btn-mini layui-btn-danger'>"
+                    + "解除"
+                    + "</span>"
+                    + "</div>"
+            },
+            _getCompanies: function () {
+
+            },
+            _getUsers: function () {
+
+            }
+        };
+
+    exports('paging', paging);
+});

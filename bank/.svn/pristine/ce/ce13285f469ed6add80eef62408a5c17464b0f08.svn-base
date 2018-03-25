@@ -1,0 +1,29 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+/**
+ * Class BankModel
+ */
+class CompanyModel extends Base_Model {
+
+    public function __construct() {
+        parent::__construct('eemsii');
+    }
+
+    public function getCompanies($id = 0) {
+        $fields = '`id`, `shortname`, `fullname`';
+
+        if ($id) {
+            $sql = "SELECT $fields FROM `company` WHERE id = ?";
+
+            return $this->select($sql, $id);
+        } else {
+            $sql = "SELECT $fields FROM `company`";
+
+            return $this->select($sql);
+        }
+    }
+
+    public function add($data) {
+        return $this->insert('company', $data);
+    }
+}

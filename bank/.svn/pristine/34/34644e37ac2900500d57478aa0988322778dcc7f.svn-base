@@ -1,0 +1,23 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+/**
+ * Class User
+ */
+class User extends Base_Controller {
+	public function __construct() {
+		parent::__construct(0);
+
+        $this->load->model('UserModel', 'user', true);
+	}
+
+    public function index() {
+	    $list = $this->user->getUserWithBanks();
+
+	    $this->data['actUrl'] = $this->data['base_url'] . "user/mapuser/";
+	    $this->data['list'] = $list;
+
+	    unset($list);
+
+        $this->view('user/index');
+    }
+}

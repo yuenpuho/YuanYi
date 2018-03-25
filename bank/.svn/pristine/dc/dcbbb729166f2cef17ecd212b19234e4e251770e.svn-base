@@ -1,0 +1,39 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Bank extends Base_Controller {
+
+	public function __construct() {
+        parent::__construct(0);
+
+        $this->load->model('BankModel', 'bank', true);
+    }
+
+
+	public function index(){
+        $result = $this->bank->getBank();
+//        dumpDie($result);
+		$this->view('bank/index');
+	}
+
+	public function add() {
+        if (isset($_POST['short'], $_POST['full']) && !empty($_POST['short']) && !empty($_POST['full'])) {
+            $data = array('shortname' => trim($_POST['short']), 'fullname' => trim($_POST['full']));
+
+            $result = $this->bank->add($data);
+
+            if ($result) {
+                $this->success();
+            } else{
+                $this->error();
+            }
+        }
+
+        $this->view('bank/add');
+    }
+
+    public function update() {
+
+        $this->view('bank/add');
+    }
+}

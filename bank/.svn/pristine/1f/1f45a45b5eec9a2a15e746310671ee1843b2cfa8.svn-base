@@ -1,0 +1,55 @@
+<div class="layui-body">
+    <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+        <ul class="layui-tab-title">
+            <li class="layui-this">添加银行</li>
+        </ul>
+
+        <div class="layui-tab-content">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">简称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="short" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" />
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">全称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="full" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" />
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="submit">立即提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use('form', function(){
+        var form = layui.form,
+            $ = layui.jquery;
+
+        // 监听提交
+        form.on('submit(submit)', function(data){
+            $.post(
+                '<?php echo $base_url . "bank/add/"; ?>',
+                data.field,
+                function (result) {
+                    if (result.status == 1) {
+                        layer.confirm(result.message, {icon:1});
+                    }else{
+                        layer.alert(result.message, {icon:5});
+                    }
+                },
+                'json'
+            );
+
+            return false;
+        });
+    });
+</script>

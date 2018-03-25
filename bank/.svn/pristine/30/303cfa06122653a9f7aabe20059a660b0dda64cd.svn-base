@@ -1,0 +1,10 @@
+<?php
+/**
+ * 自动加载自定义的 trait 类
+ * author: hu.yuanpu
+ * Date: 2017/9/21
+ * Time: 15:48
+ */
+spl_autoload_register(function ($trait) {
+    require_once APPPATH . 'traits' . DIRECTORY_SEPARATOR . $trait . '.php';
+});

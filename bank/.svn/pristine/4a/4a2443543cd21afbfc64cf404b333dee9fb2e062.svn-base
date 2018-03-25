@@ -1,0 +1,64 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+/**
+ * 公共数据库操作类
+ * Class Common
+ */
+class Common extends CI_Model {
+    private static $eemsii = null;
+
+    public function __construct() {
+        parent::__construct();
+
+        self::$eemsii = $this->load->database('eemsii', TRUE);
+    }
+
+    public function select($sql, $param, $db = 'default') {
+        $hander = $db == 'default' ? $this->db : self::$eemsii;
+
+        if (is_array($param)) {
+            return $hander->query($sql, $param)->result_array();
+        } else {
+            return $hander->query($sql, $param)->row_array();
+        }
+    }
+
+    /**
+     * 添加数据（支持批量添加，批量添加时，返回新增ID的数组）
+     * @param string $tbl
+     * @param array $data
+     * @param string $db
+     * @param bool $batch
+     * @return array
+     */
+    public function insert($tbl = '', $data = array(), $db = 'default', $batch = false) {
+        $hander = $db == 'default' ? $this->db : self::$eemsii;
+
+        if ($batch) {
+            $hander->insert_batch($tbl, $data);
+
+            $start = $hander->insert_id();
+            $end = count($data) - 1;
+            $end = $start + $end;
+
+            return range($start, $end);
+        } else {
+            $hander->insert($tbl, $data);
+
+            return $hander->insert_id();
+        }
+    }
+
+    public function update($tbl = '', $data = array(), $condition = array(), $db = 'default') {
+        $hander = $db == 'default' ? $this->db : self::$eemsii;
+
+        return $hander->update($tbl, $data, $condition);
+    }
+
+    public function delete($tbl = '', $condition = array(), $db = 'default') {
+        $hander = $db == 'default' ? $this->db : self::$eemsii;
+
+        return $hander->delete($tbl, $condition);
+    }
+}

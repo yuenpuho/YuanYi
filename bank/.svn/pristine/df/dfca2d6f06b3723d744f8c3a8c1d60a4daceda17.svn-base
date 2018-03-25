@@ -1,0 +1,21 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+/**
+ * Class BankModel
+ */
+class BankModel extends Base_Model {
+
+    public function __construct() {
+        parent::__construct();
+    }
+
+    public function getBank() {
+        $sql = 'SELECT * FROM `bank`';
+
+        return $this->select($sql);
+    }
+
+    public function add($data) {
+        return $this->insert('bank', $data);
+    }
+}

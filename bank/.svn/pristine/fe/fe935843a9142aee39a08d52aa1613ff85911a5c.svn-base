@@ -1,0 +1,68 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+/**
+ * Class User
+ */
+class User extends Base_Controller {
+	public function __construct() {
+		parent::__construct();
+
+        $this->load->model('Common', 'CommonModel', true);
+	}
+
+    /**
+     * 检查是否通过微信浏览器访问的方法
+     * @return bool
+     */
+    public function is_weixin(){
+        if (strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger') !== false) {
+            return true;
+        }
+
+        return false;
+    }
+
+	public function index() {
+        // 检查是否通过微信浏览器访问，如果是则跳转进入微信验证
+        if ($this->is_weixin()) {
+            header("Location: " . USERCLOUD_DNS . "wxauth_1st.php");
+
+            exit();
+        }
+                
+        redirect('bank/index/init');
+	}
+        
+	public function login() {
+        if ($this->is_weixin()) {
+            header("Location: " . USERCLOUD_DNS . "wxauth_1st.php");
+
+            exit();
+        }
+
+        // 统一到usercloud系统登录
+        if (USERCLOUD_ACTIVE == 1) {
+            redirect(USERCLOUD_URL . 'system/logout/');
+        } else {
+            $this->data['username'] = '';
+            redirect(USERCLOUD_URL . 'system/login/');
+        }
+	}
+
+	public function logout() {
+        $userid = $this->session->userdata('user');
+		$user = $this->CommonModel->getUser($userid);
+
+		if (count($user)){
+		    $data = array('moment' => date('Y-m-d H:i:s'), 'type' => 'logout', 'msg' => $userid . ' 退出登录');
+			$this->CommonModel->addLog($data);
+        }
+
+		$session_items = array('logined', 'user', 'role'); // cookie for "theme" will not delete
+		foreach($session_items as $item){
+			$this->session->unset_userdata($item);
+        }
+
+        redirect(USERCLOUD_URL . 'system/login/');
+	}
+}

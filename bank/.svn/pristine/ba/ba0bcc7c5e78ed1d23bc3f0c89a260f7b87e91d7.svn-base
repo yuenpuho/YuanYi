@@ -1,0 +1,142 @@
+<style>
+    .company{float:left}
+    .company span{margin-left:15px;}
+</style>
+<table class="layui-table">
+    <thead>
+        <tr>
+            <th>简称</th>
+            <th>全称</th>
+            <th>贷款的公司</th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php foreach ($list as $item) { ?>
+        <tr>
+            <td><?php echo $item['shortname']; ?></td>
+            <td>
+                <?php echo $item['fullname']; ?>
+                <span class="edit layui-btn layui-btn-mini" data-url="<?php echo $base_url . 'bank/edit/' . $item['bid']; ?>">
+                    编辑
+                </span>
+            </td>
+            <td>
+                <?php if (isset($item['companies'])) {
+                    $mTop = (count($item['companies']) - 1) * 20 / 2;
+                ?>
+                <div class="company">
+                    <?php foreach ($item['companies'] as $val) { ?>
+                    <p><?php echo $val['cname']; ?></p>
+                    <?php } ?>
+                </div>
+                <div class="company" style="margin-top:<?php echo $mTop; ?>px">
+                    <span data-url="<?php echo $base_url . 'mapping/relievecompany/' . $item['bid']; ?>"
+                        class="layui-btn layui-btn-mini layui-btn-danger">解除</span>
+                </div>
+                <?php } ?>
+            </td>
+        </tr>
+    <?php } ?>
+    </tbody>
+</table>
+
+<div id="paging" style="text-align:center;margin-top:30px"></div>
+<script>
+    layui.use(['element', 'laypage'], function(){
+        var $ = layui.jquery,
+            laypage = layui.laypage,
+            iframe = window.window.frameElement,
+            navEdit = $('.layui-nav-child dd span:eq(3)', parent.document),
+            bankList = $('.layui-nav-child dd span:eq(0)', parent.document),
+            navRelieve = $('.layui-nav-child dd span:eq(4)', parent.document);
+
+        /**
+         * 监听编辑（银行）按钮（注意：由于元素时动态添加的，需要采用事件委托或代理方式绑定）
+         */
+        $("tbody").on("click", ".edit", function () {
+            navEdit.attr('data-url', $(this).data('url'));
+            navEdit.click();
+        });
+
+        /**
+         * 监听解除（关联的公司）按钮
+         */
+        $("tbody").on("click", ".layui-btn-danger", function () {
+            navRelieve.attr('data-url', $(this).data('url'));
+            navRelieve.click();
+        });
+
+        /**
+         * 分页功能
+         */
+        laypage.render({
+            elem: 'paging',
+            count: <?php echo $total; ?>,
+            prev: '<i class="layui-icon">&#xe603;</i>',
+            next: '<i class="layui-icon">&#xe602;</i>',
+            layout: ['count', 'prev', 'page', 'next', 'limit', 'skip'],
+            jump: function (obj, first) {
+                if (!first) {
+                    $.post(
+                        '<?php echo $base_url . 'bank/bankList/'; ?>',
+                        {curr: obj.curr, limit: obj.limit},
+                        function (result) {
+                            var i = 0,
+                                html = '',
+                                component = '',
+                                keys = Object.keys(result),// 获取JSON对象的键
+                                total = keys.length,
+                                editUrl = "<?php echo $base_url . 'bank/edit/'; ?>",
+                                relieveUrl = "<?php echo $base_url . 'mapping/relievecompany/'; ?>";
+
+                            // 切换菜单时，定位到当前页
+                            component = iframe.src.split('#');
+                            iframe.src = component[0] + '#page=' + obj.curr;
+                            bankList.attr('data-url', iframe.src);
+
+                            keys.sort(function (x, y) {return y - x;});// 进行排序
+
+                            for(i; i < total; i++) {
+                                var key = keys[i];
+
+                                html += "<tr>"
+                                        + "<td>"+ result[key].shortname +"</td>"
+                                        + "<td>"
+                                            + result[key].fullname + "&nbsp;"
+                                            + "<span class='edit layui-btn layui-btn-mini' data-url='"+ editUrl + result[key].bid +"'>"
+                                                + "编辑"
+                                            + "</span>"
+                                        + "</td>"
+                                        + "<td>";
+
+                                if (result[key].companies) {
+                                    var companies = result[key].companies,
+                                        length = companies.length,
+                                        mTop = (length - 1) * 20 / 2;
+
+                                    html += "<div class='company'>";
+
+                                    for (var j = 0; j < length; j++) {
+                                        html += "<p>"+ companies[j].cname +"</p>"
+                                    }
+
+                                    html += "</div>"
+                                        + "<div class='company' style='margin-top:"+ mTop +"px'>"
+                                            + "<span data-url='"+ relieveUrl + result[key].bid + "' class='layui-btn layui-btn-mini layui-btn-danger'>"
+                                                + "解除"
+                                            + "</span>"
+                                        + "</div>"
+                                }
+
+                                html += "</td></tr>";
+                            }
+
+                            $('tbody').empty().html(html);
+                        },
+                        'json'
+                    );
+                }
+            }
+        });
+    });
+</script>

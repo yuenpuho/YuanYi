@@ -1,0 +1,26 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+/**
+ * 公共数据库操作类
+ * Class Common
+ */
+class Common extends CI_Model {
+    private static $eemsii = null;
+
+    public function __construct() {
+        parent::__construct();
+
+        self::$eemsii = $this->load->database('eemsii', TRUE);
+    }
+
+    public function getUser($userid) {
+        $sql = "SELECT * FROM users WHERE userid = ? AND valid = '1'";
+
+        return self::$eemsii->query($sql, $userid)->row();
+    }
+
+    public function addLog($data) {//添加LOG
+        return self::$eemsii->insert('log', $data);
+    }
+}

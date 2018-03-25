@@ -1,0 +1,55 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class UserModel extends Base_Model {
+
+    public function __construct() {
+        parent::__construct();
+    }
+
+    public function getUsers($id = 0) {
+        $fields = '*';
+
+        if ($id) {
+            $sql = "SELECT $fields FROM `users` WHERE cid = ?";
+
+            return $this->select($sql, $id);
+        } else {
+            $sql = "SELECT $fields FROM `users`";
+
+            return $this->select($sql);
+        }
+    }
+
+    public function getUserWithBanks() {
+        $fields = 'b.bid bid, b.fullname, u.userid, u.username, u.valid';
+
+        $sql = "SELECT $fields FROM `bank` b LEFT JOIN `bank_user_mapping` m ON b.bid = m.bid";
+        $sql .= " LEFT JOIN `users` u ON m.uid = u.userid";
+
+        $result = $this->select($sql);
+
+        return $this->merge($result);
+    }
+
+    private function merge($data) {
+        $temp = array();
+
+        foreach ($data as $item) {
+            $temp[$item['bid']]['bid'] = $item['bid'];
+            $temp[$item['bid']]['fullname'] = $item['fullname'];
+
+            if (isset($item['userid'])) {
+                $temp[$item['bid']]['users'][] = array(
+                    'uid' => $item['userid'],
+                    'valid' => $item['valid'],
+                    'username' => $item['username']
+                );
+            }
+        }
+
+        unset($data);
+
+        return $temp;
+    }
+}

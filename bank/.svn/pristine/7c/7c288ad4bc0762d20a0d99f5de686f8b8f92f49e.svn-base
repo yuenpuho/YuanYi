@@ -1,0 +1,33 @@
+<?php
+class Base_Controller extends CI_Controller {
+	public $data;
+
+	public function __construct($checkLogin=true) {
+     	parent::__construct();
+        $this->load->helper('url');
+
+        $this->data['nowController'] = $this->uri->segment(1, "");
+        $this->data['nowAction'] = $this->uri->segment(2, "");
+        $this->data['base_url'] = $this->config->item('base_url'); //主题所在 URL
+        $this->data['theme_url'] = $this->data['base_url'] . "application/" . 'views/';
+
+        $this->checkLogin($checkLogin);
+	}
+
+	function checkLogin($checkLogin=true) {
+		$this->load->library('session');
+        if ($checkLogin && $this->session->logined!=1) {
+        	redirect('system/login/');
+        }
+	}
+
+	function view($fileName, $withHeader=1, $withFooter=1) {
+		if ($withHeader) {
+			$this->load->view('header', $this->data);
+		}
+		$this->load->view($fileName, $this->data);
+		if ($withFooter) {
+			$this->load->view('footer');
+		}
+	}
+}

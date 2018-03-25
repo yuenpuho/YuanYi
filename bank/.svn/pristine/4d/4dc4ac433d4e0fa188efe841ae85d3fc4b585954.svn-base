@@ -1,0 +1,11 @@
+<?php
+namespace Application\Traits;
+/**
+ * Trait Merging
+ * @package Application\Traits
+ */
+trait Merging {
+    public function merge() {
+        echo 'ok';
+    }
+}

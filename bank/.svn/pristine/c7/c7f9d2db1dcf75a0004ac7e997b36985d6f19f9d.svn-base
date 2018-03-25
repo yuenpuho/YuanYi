@@ -1,0 +1,30 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Mapping extends Base_Controller {
+
+	public function __construct() {
+        parent::__construct(0);
+
+        $this->load->model('MappingModel', 'bank', true);
+    }
+
+
+	public function mapCompany() {
+	    $this->data['title'] = '选择公司';
+
+        $this->view('bank/map');
+    }
+
+    public function mapUser() {
+        $this->data['title'] = '设置银行员工';
+	    
+        $this->view('bank/map');
+    }
+
+    public function mapBank() {
+        $this->data['title'] = '选择银行';
+
+        $this->view('bank/map');
+    }
+}
