@@ -400,4 +400,9 @@ return [
                                     '从浏览器加载媒体文件的问题。',
         'symlink_missing_title' => '缺失的存储软连接',
     ],
+    'navigation' => [
+        'Profile' => '我的头像',
+        'Home' => '我的家',
+        'Logout' => '注销',
+    ],
 ];
