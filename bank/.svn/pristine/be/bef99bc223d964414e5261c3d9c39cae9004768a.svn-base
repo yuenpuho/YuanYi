@@ -1,5 +1,0 @@
-<script>
-//    layui.config({
-//        base: '<?php //echo $theme_url; ?>//js/'
-//    }).use('common');
-</script>

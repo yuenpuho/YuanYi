@@ -1,1 +1,0 @@
-<script src="<?php echo $theme_url; ?>layui/layui.js?v=<?php echo VERSIONS; ?>"></script>
