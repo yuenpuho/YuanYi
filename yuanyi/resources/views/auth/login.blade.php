@@ -3,9 +3,11 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="text-center mt-xl-5 col-4">
-            <img class="mb-4" src="{{ Voyager::image('settings/March2018/OS7GU4v8ldYQi1TRGDCE.png') }}" alt="" width="88">
-            <h1 class="h3 mb-4 font-weight-normal">Please sign in</h1>
+        <div class="mt-xl-5 col-4">
+            <div class="text-center">
+                <img class="mb-4 text-center" src="{{ Voyager::image('settings/March2018/OS7GU4v8ldYQi1TRGDCE.png') }}" alt="" width="88">
+                <h1 class="h3 mb-4 font-weight-normal">Please sign in</h1>
+            </div>
             <form class="form-horizontal" method="POST" action="{{ route('login') }}">
                 {{ csrf_field() }}
 
@@ -25,19 +27,24 @@
                     <span class="help-block"><strong>{{ $errors->first('password') }}</strong></span>
                     @endif
                 </div>
-
                 <div class="form-group">
-                    <a class="btn btn-link" href="{{ route('password.request') }}">忘记密码？</a>
-                    <label>
-                        <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> 记住我
-                    </label>
+                    <div class="col-7 mb-4 float-left">
+                        <a class="btn btn-link" style="margin-top:-8px" href="{{ route('password.request') }}">忘记密码？</a>
+                    </div>
+
+                    <div class="custom-control custom-checkbox float-left">
+                        <input type="checkbox" name="remember" class="custom-control-input" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                        <label class="custom-control-label" style="vertical-align:1px;line-height:0" for="remember">
+                            记住我
+                        </label>
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <button type="submit" class="btn btn-lg btn-primary btn-block">Login</button>
+                    <button type="submit" class="btn btn-lg btn-primary btn-block">Sign in</button>
                 </div>
 
-                <p class="mt-5 mb-3 text-muted">圆一工作室 © 2012-<?php echo date('Y'); ?></>
+                <p class="text-center mt-5 text-muted">圆一工作室 © 2012-<?php echo date('Y'); ?></p>
             </form>
         </div>
     </div>
